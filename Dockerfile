@@ -23,6 +23,8 @@ RUN install-php-extensions \
   gd \
   opcache
 
+RUN setcap -r /usr/local/bin/frankenphp
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
@@ -46,5 +48,6 @@ RUN mkdir -p \
   && chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 8080
+ENV SERVER_NAME=:8080
 
-CMD ["sh", "-c", "php artisan migrate --force && exec frankenphp php-server --listen 0.0.0.0:${PORT:-8080} --root public"]
+CMD ["sh", "-c", "php artisan migrate --force && frankenphp php-server -r public/"]
