@@ -22,7 +22,7 @@
         @endif
     </head>
     <body class="min-h-screen flex flex-col bg-base-200 font-sans">
-        <nav class="navbar bg-base-100">
+        <nav class="navbar bg-base-100 sticky top-0 z-10 opacity-95">
             <div class="navbar-start">
                 <a href="/" class="btn btn-ghost text-xl">🐦 Chirper</a>
             </div>
@@ -38,7 +38,7 @@
      
         <footer class="footer footer-center p-5 bg-base-300 text-base-content text-xs">
             <div>
-                <p>© 2025 Chirper - Built with Laravel and ❤️</p>
+                <p>© {{ date('Y') }} Chirper - Built with Laravel and ❤️</p>
             </div>
         </footer>
     </body>
