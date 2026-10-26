@@ -6,7 +6,7 @@
 			@if ($chirp->user)
 				<div class="avatar">
 					<div class="size-10 rounded-full">
-						<img src="https://avatars.laravel.cloud/{{ urlencode($chirp->user->email) }}"
+						<img src="https://avatars.laravel.cloud/{{ urlencode($chirp->user->email) }}?vibe=ocean"
 							alt="{{ $chirp->user->name }}'s avatar" class="rounded-full" />
 					</div>
 				</div>
@@ -30,7 +30,8 @@
 							<span class="text-sm text-base-content/60 italic">edited</span>
 						@endif
 					</div>
-
+					
+					@can('update', $chirp)
 					<div class="flex gap-1">
 						<a href="/chirps/{{ $chirp->id }}/edit" class="btn btn-ghost btn-xs">
 							Edit
@@ -45,6 +46,7 @@
 							</button>
 						</form>
 					</div>
+					@endcan
 				</div>
 				<p class="mt-1">{{ $chirp->message }}</p>
 			</div>
