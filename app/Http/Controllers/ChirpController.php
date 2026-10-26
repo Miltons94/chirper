@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chirp;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ChirpController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
         $chirps = Chirp::with('user')
@@ -25,7 +28,8 @@ class ChirpController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'min:2'
+                'min:2',
+                Rule::unique('chirps')->where(fn ($query) => $query->where('user_id', $request->user()->id))
             ]
         ],
         [
@@ -34,28 +38,25 @@ class ChirpController extends Controller
             'message.min' => 'Chirp must have at least 2 characters!'
         ]);
 
-        Chirp::create([
-            'message' => $validated['message'],
-            'user_id' => null
-        ]);
-
+        auth()->user()->chirps()->create($validated);
         return redirect('/')->with('success', 'Your chirp was created successfully!');
     }
 
     public function edit(Chirp $chirp)
     {
+        $this->authorize('update', $chirp);
         return view('chirps.edit', compact('chirp'));
     }
 
     public function update(Request $request, Chirp $chirp)
     {
-
-    $user = \App\Models\User::take(1)->get();
+        $this->authorize('update', $chirp);
         $validated = $request->validate([
             'message' => [
                 'required',
                 'max:255',
-                'min:2'
+                'min:2',
+                Rule::unique('chirps')->where(fn ($query) => $query->where('user_id', $request->user()->id))
             ]
         ]);
 
@@ -64,7 +65,9 @@ class ChirpController extends Controller
     }
     public function destroy(Chirp $chirp)
     {
+        $this->authorize('delete', $chirp);
         $chirp->delete();
         return redirect('/')->with('success', 'Your chirp was deleted!');
     }
 }
+    
