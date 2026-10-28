@@ -25,11 +25,11 @@ class ChirpController extends Controller
                 'user_id' => $chirp->user?->id,
                 'created_at' => $chirp->created_at->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
-                'user'=> $chirp->user ?? null,
+                'user' => $chirp->user ?? null,
                 'can' => [
-                    'update' => auth()->user()? auth()->user()->can('update', $chirp) : false,
-                    'delete' => auth()->user()? auth()->user()->can('delete', $chirp) : false,
-                ]
+                    'update' => auth()->user() ? auth()->user()->can('update', $chirp) : false,
+                    'delete' => auth()->user() ? auth()->user()->can('delete', $chirp) : false,
+                ],
             ]);
 
         return Inertia::render('Chirps/Index', ['chirps' => $chirps]);
@@ -43,26 +43,26 @@ class ChirpController extends Controller
                 'string',
                 'max:255',
                 'min:2',
-                Rule::unique('chirps')->where(fn ($query) => $query->where('user_id', $request->user()->id))
-            ]
+                Rule::unique('chirps')->where(fn ($query) => $query->where('user_id', $request->user()->id)),
+            ],
         ],
-        [
-            'message.required' => 'Please write something to chirp!',
-            'message.max' => 'Chirp must be 255 characters or less',
-            'message.min' => 'Chirp must have at least 2 characters!'
-        ]);
+            [
+                'message.required' => 'Please write something to chirp!',
+                'message.max' => 'Chirp must be 255 characters or less',
+                'message.min' => 'Chirp must have at least 2 characters!',
+            ]);
 
         $chirp = auth()->user()->chirps()->create($validated);
 
-        //broadcast the new $chirp to webSockets
+        // broadcast the new $chirp to listening web clients
         broadcast(new NewChirpEvent($chirp))->toOthers();
-        
         return redirect('/')->with('status', 'Your chirp was created successfully!');
     }
 
     public function edit(Chirp $chirp)
     {
         $this->authorize('update', $chirp) || abort(403);
+
         return Inertia::render('Chirps/Edit', ['chirp' => $chirp]);
     }
 
@@ -70,10 +70,11 @@ class ChirpController extends Controller
     {
         $this->authorize('update', $chirp) || abort(403);
         $validated = $request->validate([
-            'message' => 'required|string|max:255|min:2'
+            'message' => 'required|string|max:255|min:2',
         ]);
 
         $chirp->update($validated);
+
         return redirect('/')->with('status', 'Your chirp was updated!');
     }
 
@@ -81,6 +82,7 @@ class ChirpController extends Controller
     {
         $this->authorize('delete', $chirp) || abort(403);
         $chirp->delete();
+
         return redirect('/')->with('status', 'Your chirp was deleted!');
     }
 }

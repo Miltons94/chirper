@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="lofi">
     <head>
 
         <title>{{ isset($title) ? "$title - Chirper" : "Chirper" }}</title>

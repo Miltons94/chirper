@@ -10,7 +10,7 @@ export type Chirp = {
     message: string,
     user: User|null,
     created_at: string,
-    updated_at: string|null,
+    updated_at: boolean|null,
     can : {
         update: boolean,
         delete: boolean
