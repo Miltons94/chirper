@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewChirpEvent;
 use App\Models\Chirp;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -51,7 +52,11 @@ class ChirpController extends Controller
             'message.min' => 'Chirp must have at least 2 characters!'
         ]);
 
-        auth()->user()->chirps()->create($validated);
+        $chirp = auth()->user()->chirps()->create($validated);
+
+        //broadcast the new $chirp to webSockets
+        broadcast(new NewChirpEvent($chirp))->toOthers();
+        
         return redirect('/')->with('status', 'Your chirp was created successfully!');
     }
 
