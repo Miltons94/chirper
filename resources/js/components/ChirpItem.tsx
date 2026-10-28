@@ -1,5 +1,6 @@
-import { usePage } from "@inertiajs/react";
+import { Link, useForm, usePage } from "@inertiajs/react";
 import { Chirp } from "../types/chirp";
+import { route } from "ziggy-js";
 
 type Props = {
   chirp: Chirp
@@ -7,6 +8,16 @@ type Props = {
 
 export default function ChirpItem({ chirp}: Props)
 {
+  const { delete: destroy, processing, errors } = useForm();
+
+  const submit = (e:React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    destroy(route('chirps.destroy', chirp.id), {
+      preserveScroll: true,
+
+    });
+
+  };
   return (
     <div className="card bg-base-100 shadow">
       <div className="card-body">
@@ -42,12 +53,12 @@ export default function ChirpItem({ chirp}: Props)
               </div>
 							
               <div className={`flex gap-1 ${(chirp.can.delete && chirp.can.update)? 'visible':'hidden'}`}>
-                <a href={`/chirps/${chirp.id}/edit`} className="btn btn-ghost btn-xs">
+                <Link href={`/chirps/${chirp.id}/edit`} className="btn btn-ghost btn-xs">
                   Edit
-                </a>
-                <form method="POST" action={`/chirps/${chirp.id}`}>
-
-                  <button type="submit"
+                </Link>
+                <form method="POST" onSubmit={submit}>
+                  <button 
+                    type="submit"
                     className="btn btn-ghost btn-xs text-error">
                     Delete
                   </button>

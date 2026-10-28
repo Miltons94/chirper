@@ -2,6 +2,7 @@ import { Head, useForm } from '@inertiajs/react';
 import ChirpList from '../../components/ChirpList';
 import AppLayout from '@/components/AppLayout';
 import { Chirp } from '../../types/chirp';
+import ChirpForm from '@/components/ChirpForm';
 
 type Props = {
   chirps: Chirp[]
@@ -9,16 +10,6 @@ type Props = {
 
 export default function Index({chirps}: Props)
 {
-
-  const {data, setData, post, processing, errors} = useForm({
-    message: '',
-  });
-
-  const submit  = (e:React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    post('/chirps');
-  };
-
   return (
     <AppLayout>
       <Head title='Home Feed'/>
@@ -26,32 +17,7 @@ export default function Index({chirps}: Props)
         <h1 className="text-3xl font-bold mt-8">Latest Chirps</h1>
 
         {/*-- Chirp Form --*/}
-        <div className="card bg-base-100 shadow mt-8">
-          <div className="card-body">
-            <form method="POST" onSubmit={submit}>
-              <div className="form-control w-full">
-                <textarea 
-                  id="message" placeholder="What's on your mind?"
-                  className={`textarea textarea-bordered w-full resize-none ${errors.message? 'textarea-error':''}`} 
-                  maxLength={255} 
-                  required={true}
-                  value={data.message}
-                  onChange={(e) => setData('message', e.target.value)}></textarea>
-                {errors.message &&(
-                  <div className="label">
-                    <span className="label-text-alt text-error"></span>
-                  </div>
-                )}
-              </div>
-              <div className="mt-4 flex items-center justify-end">
-                <button type="submit" disabled={processing} className="btn btn-primary btn-sm">
-                  {processing? 'Saving' : 'Chirp'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
+        <ChirpForm chirp = {null} buttonText='Chirp'/>
       <div className="space-y-4 mt-8">
         {chirps.length > 0 ? (
           <ChirpList chirps={chirps} />

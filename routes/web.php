@@ -12,14 +12,14 @@ Route::get('/', [ChirpController::class, 'index']);
 // auth middleware
 Route::middleware(['auth','verified'])->group(function() {
 
-	Route::post('/chirps', [ChirpController::class, 'store']);
-	Route::get('/chirps/{chirp}/edit', [ChirpController::class, 'edit']);
-	Route::put('/chirps/{chirp}', [ChirpController::class, 'update']);
-	Route::delete('/chirps/{chirp}', [ChirpController::class, 'destroy']);
+	Route::post('/chirps', [ChirpController::class, 'store'])->name('chirps.store');
+	Route::get('/chirps/{chirp}/edit', [ChirpController::class, 'edit'])->named('chirps.edit');
+	Route::put('/chirps/{chirp}', [ChirpController::class, 'update'])->name(('chirps.update'));
+	Route::delete('/chirps/{chirp}', [ChirpController::class, 'destroy'])->name('chirps.destroy');
 
 	Route::post('/logout', Logout::class)
 		->middleware('auth')
-		->name('logout');
+		->name('logout')->name('logout');
 
 });
 
