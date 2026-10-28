@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AppLayout from '@/components/AppLayout';
 import { Chirp } from '@/types/chirp';
 import ChirpForm from '@/components/ChirpForm';
@@ -10,6 +10,7 @@ interface EditChirpProps{
 export default function EditChirp({ chirp }: EditChirpProps) {
   return (
     <AppLayout>
+      <Head title="Edit Chirp" />
       <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
         <h1 className="text-xl font-bold mb-4">Edit Your Chirp</h1>
 
