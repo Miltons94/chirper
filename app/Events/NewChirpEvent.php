@@ -22,11 +22,12 @@ class NewChirpEvent implements ShouldBroadcast
      *
      * @return array<int, Channel>
      */
-    public function broadcastOn(): Channel
+    public function broadcastOn(): array
     {
-        return new Channel('chirper');
+        return [
+            new Channel('chirper')
+        ];
     }
-
     /**
      * Get event name
      * @return string
@@ -49,8 +50,12 @@ class NewChirpEvent implements ShouldBroadcast
             'name' => $this->chirp->user->name,
             'email' => $this->chirp->user->email,
             'can' => [
-                'update' => Auth::check()? (auth()->user()->can('update', $this->chirp)): false,
-                'delete' => Auth::check()? (auth()->user()->can('delete', $this->chirp)) : false
+                'update' => Auth::check()
+                            ? (auth()->user()->can('update', $this->chirp))
+                            : false,
+                'delete' => Auth::check()
+                            ? (auth()->user()->can('delete', $this->chirp))
+                            : false
             ]
         ];
 
