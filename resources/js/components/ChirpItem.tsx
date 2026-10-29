@@ -51,8 +51,8 @@ export default function ChirpItem({ chirp}: Props)
 									</div>
 								)}
               </div>
-							
-              <div className={`flex gap-1 ${(chirp.can.delete && chirp.can.update)? 'visible':'hidden'}`}>
+							{chirp.user.can.update && chirp.user.can.delete && (
+              <div className={`flex gap-1`}>
                 <Link href={`/chirps/${chirp.id}/edit`} className="btn btn-ghost btn-xs">
                   Edit
                 </Link>
@@ -64,6 +64,7 @@ export default function ChirpItem({ chirp}: Props)
                   </button>
                 </form>
               </div>
+              )}
             </div> 
 						<p className="mt-1">{chirp.message}</p>
           </div>

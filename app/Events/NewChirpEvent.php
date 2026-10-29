@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Chirp;
+use Auth;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -13,25 +14,27 @@ class NewChirpEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Chirp $chirp) {}
+    public function __construct(public Chirp $chirp) 
+    { }
 
     /**
      * Get the channels the event should broadcast on.
      *
      * @return array<int, Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
     {
-        return [
-            new Channel('chirper'),
-        ];
+        return new Channel('chirper');
     }
 
-    public function broadcastAs(): string
-    {
+    /**
+     * Get event name
+     * @return string
+     */
+
+    public function broadcastAs(): string{
         return 'new-chirp';
     }
-
     /**
      * Get the data to broadcast for the event.
      *
@@ -41,6 +44,16 @@ class NewChirpEvent implements ShouldBroadcast
     {
         $this->chirp->loadMissing('user');
 
+        $formattedUser = [
+            'id' => $this->chirp->user->id,
+            'name' => $this->chirp->user->name,
+            'email' => $this->chirp->user->email,
+            'can' => [
+                'update' => Auth::check()? (auth()->user()->can('update', $this->chirp)): false,
+                'delete' => Auth::check()? (auth()->user()->can('delete', $this->chirp)) : false
+            ]
+        ];
+
         return [
             'chirp' => [
                 'id' => $this->chirp->id,
@@ -48,11 +61,7 @@ class NewChirpEvent implements ShouldBroadcast
                 'user_id' => $this->chirp->user_id,
                 'created_at' => $this->chirp->created_at->diffForHumans(),
                 'updated_at' => null,
-                'user' => $this->chirp->user,
-                'can' => [
-                    'update' => true,
-                    'delete' => true
-                ],
+                'user' => $formattedUser,
             ],
         ];
     }

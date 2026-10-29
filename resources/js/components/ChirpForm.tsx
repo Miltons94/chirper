@@ -48,7 +48,7 @@ export default function ChirpForm({ chirp = null, buttonText, onSuccess }: Chirp
                   onChange={(e) => setData('message', e.target.value)}></textarea>
                 {errors.message &&(
                   <div className="label">
-                    <span className="label-text-alt text-error"></span>
+                    <span className="label-text-alt text-error">{errors.message}</span>
                   </div>
                 )}
               </div>

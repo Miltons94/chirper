@@ -1,18 +1,10 @@
-type User = {
-    id: number;
-    name: string,
-    email: string
-};
+import { User } from "./user";
 
 export type Chirp = {
     id: number,
-    user_id: number|null,
+    user_id: number,
     message: string,
-    user: User|null,
+    user: User,
     created_at: string,
-    updated_at: boolean|null,
-    can : {
-        update: boolean,
-        delete: boolean
-    }
+    updated_at: boolean
 };

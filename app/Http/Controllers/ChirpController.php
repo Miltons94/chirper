@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewChirpEvent;
 use App\Models\Chirp;
+use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,12 +24,21 @@ class ChirpController extends Controller
                 'id' => $chirp->id,
                 'message' => $chirp->message,
                 'user_id' => $chirp->user?->id,
-                'created_at' => $chirp->created_at->diffForHumans(),
+                'created_at' => $chirp->created_at
+                                ->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
-                'user' => $chirp->user ?? null,
-                'can' => [
-                    'update' => auth()->user() ? auth()->user()->can('update', $chirp) : false,
-                    'delete' => auth()->user() ? auth()->user()->can('delete', $chirp) : false,
+                'user' => [
+                    'id' => $chirp->user?->id ?? null,
+                    'name' => $chirp->user?->name ?? null,
+                    'email' => $chirp->user?->email ?? null,
+                    'can' => [
+                        'update' => Auth::check()
+                                    ? auth()->user()->can('update', $chirp)
+                                    : false,
+                        'delete' => Auth::check()
+                                    ? auth()->user()->can('delete', $chirp)
+                                    : false,
+                    ]
                 ],
             ]);
 
@@ -50,12 +60,14 @@ class ChirpController extends Controller
                 'message.required' => 'Please write something to chirp!',
                 'message.max' => 'Chirp must be 255 characters or less',
                 'message.min' => 'Chirp must have at least 2 characters!',
+                'message.unique' => 'This chirp already exists. Please create a different chirp!'
             ]);
 
         $chirp = auth()->user()->chirps()->create($validated);
 
         // broadcast the new $chirp to listening web clients
         broadcast(new NewChirpEvent($chirp))->toOthers();
+
         return redirect('/')->with('status', 'Your chirp was created successfully!');
     }
 

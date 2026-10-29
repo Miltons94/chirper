@@ -11,9 +11,11 @@ export default function AppLayout({ children }: AppLayoutProps)
 {
   return (
     <div className="max-w-full p-0 m-0">
-      <NavLayout />
-      <ToastComponent />
-      <main>{children}</main>
+      <NavLayout/>
+      <ToastComponent/>
+      <main>
+        {children}
+      </main>
     </div>
   );
 }
