@@ -2,6 +2,13 @@
 # Stage 1: Build frontend assets
 FROM node:22-alpine AS frontend
 
+# Render passes service environment variables as Docker build args. Vite embeds
+# these public Pusher settings into the frontend bundle during this stage.
+ARG VITE_PUSHER_APP_KEY
+ARG VITE_PUSHER_APP_CLUSTER
+ARG VITE_PUSHER_HOST
+ARG VITE_PUSHER_PORT
+
 WORKDIR /app
 
 COPY package*.json ./
