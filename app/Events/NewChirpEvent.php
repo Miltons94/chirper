@@ -3,19 +3,17 @@
 namespace App\Events;
 
 use App\Models\Chirp;
-use Auth;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewChirpEvent implements ShouldBroadcast
+class NewChirpEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Chirp $chirp) 
-    { }
+    public function __construct(public Chirp $chirp) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -24,16 +22,17 @@ class NewChirpEvent implements ShouldBroadcast
      */
     public function broadcastOn(): Channel
     {
-        return new Channel('chirper');  
+        return new Channel('chirper');
     }
+
     /**
      * Get event name
-     * @return string
      */
-
-    public function broadcastAs(): string {
+    public function broadcastAs(): string
+    {
         return 'new-chirp';
     }
+
     /**
      * Get the data to broadcast for the event.
      *

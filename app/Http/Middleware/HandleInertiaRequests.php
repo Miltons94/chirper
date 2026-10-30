@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-        
+
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -39,12 +39,9 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user()
-                ?$request->user()->only('id', 'name')
-                : null
+                ? $request->user()->only('id', 'name')
+                : null,
             ],
-            'flash' => [
-                'status' => $request->session()->get('status')
-            ]
         ];
     }
 }

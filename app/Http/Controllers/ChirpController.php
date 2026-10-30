@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Events\NewChirpEvent;
 use App\Models\Chirp;
-use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -25,9 +24,9 @@ class ChirpController extends Controller
                 'message' => $chirp->message,
                 'user_id' => $chirp->user->id,
                 'created_at' => $chirp->created_at
-                                ->diffForHumans(),
+                    ->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
-                'user' => $chirp->user
+                'user' => $chirp->user,
             ]);
 
         return Inertia::render('Chirps/Index', ['chirps' => $chirps]);
@@ -48,15 +47,17 @@ class ChirpController extends Controller
                 'message.required' => 'Please write something to chirp!',
                 'message.max' => 'Chirp must be 255 characters or less',
                 'message.min' => 'Chirp must have at least 2 characters!',
-                'message.unique' => 'This chirp already exists. Please create a different chirp!'
+                'message.unique' => 'This chirp already exists. Please create a different chirp!',
             ]);
 
         $chirp = auth()->user()->chirps()->create($validated);
 
         // broadcast the new $chirp to listening clients
-        broadcast(new NewChirpEvent($chirp))->via('pusher')->toOthers();
+        broadcast(new NewChirpEvent($chirp))->toOthers();
 
-        return redirect('/')->with('status', 'Your chirp was created successfully!');
+        Inertia::flash('status', 'Your chirp was created successfully!');
+
+        return redirect('/');
     }
 
     public function edit(Chirp $chirp)
@@ -75,7 +76,9 @@ class ChirpController extends Controller
 
         $chirp->update($validated);
 
-        return redirect('/')->with('status', 'Your chirp was updated!');
+        Inertia::flash('status', 'Your chirp was updated!');
+
+        return redirect('/');
     }
 
     public function destroy(Chirp $chirp)
@@ -83,6 +86,8 @@ class ChirpController extends Controller
         $this->authorize('delete', $chirp) || abort(403);
         $chirp->delete();
 
-        return redirect('/')->with('status', 'Your chirp was deleted!');
+        Inertia::flash('status', 'Your chirp was deleted!');
+
+        return redirect('/');
     }
 }

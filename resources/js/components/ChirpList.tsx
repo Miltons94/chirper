@@ -1,18 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Chirp } from "../types/chirp";
 import ChirpItem from "./ChirpItem";
 import { useEchoPublic } from "@laravel/echo-react";
-import Pusher from "pusher-js";
 
 type ChirpListProps = {
   chirps: Chirp[]
 };
 
-Pusher.logToConsole = true;
-
 export default function ChirpList({ chirps}: ChirpListProps)
 {
   const [chirpItems, setChirpItems] = useState<Chirp[]>(chirps);
+
+  useEffect(() => {
+    setChirpItems(chirps);
+  }, [chirps]);
   
   useEchoPublic('chirper', '.new-chirp', (e: {chirp: Chirp}) => {
       console.log("Received new chirp", e);

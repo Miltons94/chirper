@@ -1,7 +1,7 @@
 import { usePage } from "@inertiajs/react";
 
 export default function ToastComponent() {
-  const { flash } = usePage().props;
+  const { flash } = usePage();
 
   return (
     <div>
