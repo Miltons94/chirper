@@ -22,18 +22,16 @@ class NewChirpEvent implements ShouldBroadcast
      *
      * @return array<int, Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
     {
-        return [
-            new Channel('chirper')
-        ];
+        return new Channel('chirper');  
     }
     /**
      * Get event name
      * @return string
      */
 
-    public function broadcastAs(): string{
+    public function broadcastAs(): string {
         return 'new-chirp';
     }
     /**
@@ -45,28 +43,14 @@ class NewChirpEvent implements ShouldBroadcast
     {
         $this->chirp->loadMissing('user');
 
-        $formattedUser = [
-            'id' => $this->chirp->user->id,
-            'name' => $this->chirp->user->name,
-            'email' => $this->chirp->user->email,
-            'can' => [
-                'update' => Auth::check()
-                            ? (auth()->user()->can('update', $this->chirp))
-                            : false,
-                'delete' => Auth::check()
-                            ? (auth()->user()->can('delete', $this->chirp))
-                            : false
-            ]
-        ];
-
         return [
             'chirp' => [
                 'id' => $this->chirp->id,
                 'message' => $this->chirp->message,
                 'user_id' => $this->chirp->user_id,
                 'created_at' => $this->chirp->created_at->diffForHumans(),
-                'updated_at' => null,
-                'user' => $formattedUser,
+                'updated_at' => $this->chirp->updated_at?->gt($this->chirp->created_at->addSeconds(5)),
+                'user' => $this->chirp->user,
             ],
         ];
     }

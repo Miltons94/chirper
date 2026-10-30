@@ -9,6 +9,7 @@ type Props = {
 export default function ChirpItem({ chirp}: Props)
 {
   const { delete: destroy, processing, errors } = useForm();
+  const { auth } = usePage().props;
 
   const submit = (e:React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,7 +52,7 @@ export default function ChirpItem({ chirp}: Props)
 									</div>
 								)}
               </div>
-							{chirp.user.can.update && chirp.user.can.delete && (
+							{auth.user!=null && (auth.user.id == chirp.user_id) &&(
               <div className={`flex gap-1`}>
                 <Link href={`/chirps/${chirp.id}/edit`} className="btn btn-ghost btn-xs">
                   Edit

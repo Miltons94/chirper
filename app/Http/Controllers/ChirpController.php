@@ -23,23 +23,11 @@ class ChirpController extends Controller
             ->map(fn ($chirp) => [
                 'id' => $chirp->id,
                 'message' => $chirp->message,
-                'user_id' => $chirp->user?->id,
+                'user_id' => $chirp->user->id,
                 'created_at' => $chirp->created_at
                                 ->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
-                'user' => [
-                    'id' => $chirp->user?->id ?? null,
-                    'name' => $chirp->user?->name ?? null,
-                    'email' => $chirp->user?->email ?? null,
-                    'can' => [
-                        'update' => Auth::check()
-                                    ? auth()->user()->can('update', $chirp)
-                                    : false,
-                        'delete' => Auth::check()
-                                    ? auth()->user()->can('delete', $chirp)
-                                    : false,
-                    ]
-                ],
+                'user' => $chirp->user
             ]);
 
         return Inertia::render('Chirps/Index', ['chirps' => $chirps]);
@@ -65,8 +53,8 @@ class ChirpController extends Controller
 
         $chirp = auth()->user()->chirps()->create($validated);
 
-        // broadcast the new $chirp to listening web clients
-        broadcast(new NewChirpEvent($chirp))->toOthers();
+        // broadcast the new $chirp to listening clients
+        broadcast(new NewChirpEvent($chirp))->via('pusher')->toOthers();
 
         return redirect('/')->with('status', 'Your chirp was created successfully!');
     }
