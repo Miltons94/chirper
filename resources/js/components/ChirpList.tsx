@@ -16,7 +16,6 @@ export default function ChirpList({ chirps}: ChirpListProps)
   }, [chirps]);
   
   useEchoPublic('chirper', '.new-chirp', (e: {chirp: Chirp}) => {
-      console.log("Received new chirp", e);
       setChirpItems((prev) => [e.chirp, ...prev.filter((c)=> c.id != e.chirp.id)]);
   });
 
