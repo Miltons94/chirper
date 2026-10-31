@@ -2,17 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chirp;
 use App\Models\Comment;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Chirp $chirp)
     {
-        //
+        $comments = $chirp->comments()
+                    ->with('user')
+                    ->latest()
+                    ->take(50)
+                    ->get();
+                    
+        return response()->json([
+            'comments' => $comments
+        ]);
     }
 
     /**
@@ -26,9 +37,21 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Chirp $chirp): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'comment' => 'required|string|max:255',
+        ]);
+
+        $comment = $chirp->comments()->make([
+            'content' => $validated['comment'],
+        ]);
+        $comment->user()->associate($request->user());
+        $comment->save();
+
+        Inertia::flash('status','Comment sent!');
+
+        return back();
     }
 
     /**

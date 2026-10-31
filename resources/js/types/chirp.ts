@@ -7,4 +7,6 @@ export type Chirp = {
     user: User,
     created_at: string,
     updated_at: boolean
+    comment_count: number,
+    [key: string]: unknown
 };

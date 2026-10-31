@@ -2,6 +2,7 @@ import React from "react";
 import { Chirp } from "@/types/chirp";
 import { useForm, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import { Send } from "lucide-react";
 
 interface ChirpFormProps {
   chirp: Chirp|null,
@@ -9,7 +10,7 @@ interface ChirpFormProps {
   onSuccess?: ()=> void
 }
 export default function ChirpForm({ chirp = null, buttonText, onSuccess }: ChirpFormProps) {
-  const {data, setData, post, put, processing, errors, reset } = useForm({
+  const { data, setData, post, put, processing, errors, reset } = useForm({
       message: chirp ? chirp.message : ''
   });
 
@@ -48,7 +49,7 @@ export default function ChirpForm({ chirp = null, buttonText, onSuccess }: Chirp
                 required={true}
                 value={data.message}
                 onChange={(e) => setData('message', e.target.value)}></textarea>
-              {errors.message &&(
+              {errors.message && (
                 <div className="label">
                   <span className="label-text-alt text-error">{errors.message}</span>
                 </div>
@@ -56,7 +57,7 @@ export default function ChirpForm({ chirp = null, buttonText, onSuccess }: Chirp
             </div>
             <div className="mt-4 flex items-center justify-end">
               <button type="submit" disabled={processing} className="btn btn-primary btn-sm">
-                {buttonText}
+                <Send />
               </button>
             </div>
           </form>

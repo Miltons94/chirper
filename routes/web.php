@@ -6,9 +6,13 @@ use App\Http\Controllers\Auth\Register;
 use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [ChirpController::class, 'index']);
+
+Route::get('/', [ChirpController::class, 'index'])->name('chirps.index	');
+Route::get('/chirps/{chirp}/comments', [CommentController::class, 'index'])->name('comments.index');
+
 // auth middleware
 Route::middleware(['auth','verified'])->group(function() {
 
@@ -16,6 +20,9 @@ Route::middleware(['auth','verified'])->group(function() {
 	Route::get('/chirps/{chirp}/edit', [ChirpController::class, 'edit'])->name('chirps.edit');
 	Route::put('/chirps/{chirp}', [ChirpController::class, 'update'])->name(('chirps.update'));
 	Route::delete('/chirps/{chirp}', [ChirpController::class, 'destroy'])->name('chirps.destroy');
+
+	//comments
+	Route::post('/chirps/{chirp}/comment', [CommentController::class, 'store'])->name('comments.store');
 
 	Route::post('/logout', Logout::class)
 		->middleware('auth')

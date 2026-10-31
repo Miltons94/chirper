@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class Logout extends Controller
 {
@@ -19,6 +20,7 @@ class Logout extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('success', 'You have been logged out!');
+        Inertia::flash('status', 'You have been logged out!');
+        return redirect('/');
     }
 }

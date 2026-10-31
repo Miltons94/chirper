@@ -7,6 +7,7 @@ use App\Models\User;
 use Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class Register extends Controller
 {
@@ -28,6 +29,7 @@ class Register extends Controller
         ]);
         
         Auth::login($user);
-        return redirect('/')->with('success', 'Welcome to Chirper!');
+        Inertia::flash('status', 'Welcome to Chirper!');
+        return redirect('/');
     }
 }

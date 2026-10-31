@@ -21,12 +21,14 @@ class ChirpController extends Controller
             ->get()
             ->map(fn ($chirp) => [
                 'id' => $chirp->id,
+                'comment_count' => $chirp->comments->count(),
                 'message' => $chirp->message,
                 'user_id' => $chirp->user->id,
                 'created_at' => $chirp->created_at
-                    ->diffForHumans(),
+                                      ->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
                 'user' => $chirp->user,
+                'comments' => $chirp->comments
             ]);
 
         return Inertia::render('Chirps/Index', ['chirps' => $chirps]);
