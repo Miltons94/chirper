@@ -6,6 +6,7 @@ import { Comment } from "@/types/comment";
 import axios from "axios";
 import { ChevronDown, ChevronUp, Heart } from "lucide-react";
 import CommentInput from "./CommentForm";
+import LikeButton from "./LikeButton";
 
 type Props = {
 	chirp: Chirp
@@ -75,7 +76,7 @@ export default function ChirpItem({ chirp }: Props)
 					
 					<div className="flex justify-between w-full items-start">
 						<div className="flex items-center gap-1">
-							<span className="text-sm font-semibold">{chirp?.user?.name ?? 'Anonymous'}</span>
+							<span className="text-sm font-semibold">{chirp.user?.name ?? 'Anonymous'}</span>
 							<span className="text-base-content/60">·</span>
 							<span className="text-sm text-base-content/60">{chirp.created_at}</span>
 							{chirp.updated_at && (
@@ -148,12 +149,7 @@ export default function ChirpItem({ chirp }: Props)
 								</div>
 								{/* like button */}
 								<div className="justify-end">
-									<div className="flex flex-col items-center">
-										<button className="cursor-pointer">
-											<Heart className="ease-in-out duration-200 hover:fill-red-500 hover:stroke-0 hover:scale-125"/>
-										</button>
-										<span>0</span>
-									</div>
+									<LikeButton chirp={chirp} />
 								</div>
 							</div>
 						</div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LikeController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\Register;
@@ -24,6 +25,8 @@ Route::middleware(['auth','verified'])->group(function() {
 	//comments
 	Route::post('/chirps/{chirp}/comment', [CommentController::class, 'store'])->name('comments.store');
 
+	//likes
+	Route::post('/chirps/{chirp}/like', [LikeController::class, 'toggle'])->name('chirps.like');
 	Route::post('/logout', Logout::class)
 		->middleware('auth')
 		->name('logout')->name('logout');

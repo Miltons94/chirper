@@ -23,7 +23,11 @@ class Chirp extends Model
 
     public function likes(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Like::class);
     }
 
+    public function isLikedBy(User $user): bool
+    {
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
 }

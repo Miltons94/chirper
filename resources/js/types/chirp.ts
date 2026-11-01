@@ -8,5 +8,7 @@ export type Chirp = {
     created_at: string,
     updated_at: boolean
     comment_count: number,
+    likes_count: number,
+    is_liked: boolean,
     [key: string]: unknown
 };

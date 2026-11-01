@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewChirpEvent;
 use App\Models\Chirp;
+use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,13 +23,14 @@ class ChirpController extends Controller
             ->map(fn ($chirp) => [
                 'id' => $chirp->id,
                 'comment_count' => $chirp->comments->count(),
+                'likes_count' => $chirp->likes->count(),
+                'is_liked' => Auth::check() ? $chirp->isLikedBy(auth()->user()) : false,
                 'message' => $chirp->message,
                 'user_id' => $chirp->user->id,
                 'created_at' => $chirp->created_at
                                       ->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
                 'user' => $chirp->user,
-                'comments' => $chirp->comments
             ]);
 
         return Inertia::render('Chirps/Index', ['chirps' => $chirps]);

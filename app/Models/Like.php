@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Chirp;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Like extends Model
 {
-    
+    protected $fillable = ['user_id', 'chirp_id'];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -15,6 +16,6 @@ class Like extends Model
 
     public function chirp(): BelongsTo
     {
-        return $this->belongsTo(Comment::class);
+        return $this->belongsTo(Chirp::class);
     }
 }
