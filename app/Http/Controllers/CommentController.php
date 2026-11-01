@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewCommentEvent;
 use App\Models\Chirp;
 use App\Models\Comment;
 use Illuminate\Http\RedirectResponse;
@@ -16,13 +17,13 @@ class CommentController extends Controller
     public function index(Chirp $chirp)
     {
         $comments = $chirp->comments()
-                    ->with('user')
-                    ->latest()
-                    ->take(50)
-                    ->get();
-                    
+            ->with('user')
+            ->latest()
+            ->take(50)
+            ->get();
+
         return response()->json([
-            'comments' => $comments
+            'comments' => $comments,
         ]);
     }
 
@@ -49,7 +50,9 @@ class CommentController extends Controller
         $comment->user()->associate($request->user());
         $comment->save();
 
-        Inertia::flash('status','Comment sent!');
+        broadcast(new NewCommentEvent($comment));
+
+        Inertia::flash('status', 'Comment sent!');
 
         return back();
     }

@@ -5,9 +5,10 @@ import { route } from "ziggy-js";
 
 type CommentInputProps = {
     chirp: Chirp
+    onCommentSubmitted: () => void
 }
 
-export default function CommentInput({ chirp }: CommentInputProps) {
+export default function CommentInput({ chirp, onCommentSubmitted }: CommentInputProps) {
 
     const { data, setData, processing, post, errors, reset} = useForm({
         comment: ''
@@ -19,6 +20,7 @@ export default function CommentInput({ chirp }: CommentInputProps) {
         post(route('comments.store', chirp.id), {
             onSuccess: () => {
                 reset('comment');
+                onCommentSubmitted();
             }   
         })  
     };

@@ -1,7 +1,7 @@
 import { Link, router, useForm, usePage } from "@inertiajs/react";
 import { Chirp } from "../types/chirp";
 import { route } from "ziggy-js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Comment } from "@/types/comment";
 import axios from "axios";
 import { ChevronDown, ChevronUp, Heart } from "lucide-react";
@@ -10,15 +10,49 @@ import LikeButton from "./LikeButton";
 
 type Props = {
 	chirp: Chirp
+	commentUpdates: Comment[]
 };
 
-export default function ChirpItem({ chirp }: Props)
+export default function ChirpItem({ chirp, commentUpdates }: Props)
 {
 	const { delete: destroy } = useForm();
 
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [showComments, setShowComments] = useState<boolean>(false);
 	const [isLoadingComments, setIsLoadingComments] = useState(false);
+	const [hasLoadedComments, setHasLoadedComments] = useState(false);
+	const [commentsError, setCommentsError] = useState(false);
+
+	const loadComments = async () => {
+		setIsLoadingComments(true);
+		setCommentsError(false);
+
+		try {
+			const response = await axios.get(route('comments.index', chirp.id));
+			setComments(response.data.comments);
+			setHasLoadedComments(true);
+		} catch (error) {
+			console.error("Failed to load comments!", error);
+			setCommentsError(true);
+		} finally {
+			setIsLoadingComments(false);
+		}
+	};
+
+	useEffect(() => {
+		if (!hasLoadedComments) {
+			return;
+		}
+
+		setComments((existingComments) => {
+			const existingIds = new Set(existingComments.map((comment) => comment.id));
+			const newComments = commentUpdates.filter((comment) =>
+				comment.chirp_id === chirp.id && !existingIds.has(comment.id)
+			);
+
+			return [...newComments.reverse(), ...existingComments];
+		});
+	}, [commentUpdates, hasLoadedComments, chirp.id]);
 
 	const handleToggleComments = async () => {
 		
@@ -28,18 +62,15 @@ export default function ChirpItem({ chirp }: Props)
 			return;
 		}
 		
-		if(comments.length === 0) {
-			setIsLoadingComments(true);
-
-			//fetch the comments for a particular post
-			await axios
-				.get(route('comments.index', chirp.id))
-				.then(response => setComments(response.data.comments))
-				.catch(error => console.error("Failed to load comments!", error))
-				.finally(() => setIsLoadingComments(false))
+		if(!hasLoadedComments) {
+			await loadComments();
 		}
 
 		setShowComments(true);
+	};
+
+	const handleCommentSubmitted = () => {
+		void loadComments();
 	};
 
 	const { auth } = usePage().props;
@@ -113,6 +144,11 @@ export default function ChirpItem({ chirp }: Props)
 							{isLoadingComments && (
 								<p>Loading comments...</p>
 							)}
+							{commentsError && !isLoadingComments && (
+								<button type="button" onClick={() => void loadComments()} className="text-sm text-error">
+									Could not load comments. Try again.
+								</button>
+							)}
 							{showComments && !isLoadingComments && (
 								<ul id="comments" className="list-none ml-6">
 									{comments.length == 0 ? (
@@ -145,7 +181,7 @@ export default function ChirpItem({ chirp }: Props)
 									
 									</button>
 									{/* Comment input */}
-									<CommentInput chirp={chirp} />
+									<CommentInput chirp={chirp} onCommentSubmitted={handleCommentSubmitted} />
 								</div>
 								{/* like button */}
 								<div className="justify-end">

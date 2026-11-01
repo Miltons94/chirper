@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChirpDeletedEvent;
+use App\Events\ChirpUpdatedEvent;
 use App\Events\NewChirpEvent;
 use App\Models\Chirp;
 use Auth;
@@ -28,7 +30,7 @@ class ChirpController extends Controller
                 'message' => $chirp->message,
                 'user_id' => $chirp->user->id,
                 'created_at' => $chirp->created_at
-                                      ->diffForHumans(),
+                    ->diffForHumans(),
                 'updated_at' => $chirp->updated_at?->gt($chirp->created_at->addSeconds(5)),
                 'user' => $chirp->user,
             ]);
@@ -80,6 +82,8 @@ class ChirpController extends Controller
 
         $chirp->update($validated);
 
+        broadcast(new ChirpUpdatedEvent($chirp));
+
         Inertia::flash('status', 'Your chirp was updated!');
 
         return redirect('/');
@@ -88,7 +92,10 @@ class ChirpController extends Controller
     public function destroy(Chirp $chirp)
     {
         $this->authorize('delete', $chirp) || abort(403);
+        $chirpId = $chirp->id;
         $chirp->delete();
+
+        broadcast(new ChirpDeletedEvent($chirpId));
 
         Inertia::flash('status', 'Your chirp was deleted!');
 
