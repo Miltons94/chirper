@@ -9,6 +9,7 @@ use App\Models\Chirp;
 use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -93,7 +94,11 @@ class ChirpController extends Controller
     {
         $this->authorize('delete', $chirp) || abort(403);
         $chirpId = $chirp->id;
-        $chirp->delete();
+
+        DB::transaction(function () use ($chirp): void {
+            $chirp->comments()->delete();
+            $chirp->delete();
+        });
 
         broadcast(new ChirpDeletedEvent($chirpId));
 
